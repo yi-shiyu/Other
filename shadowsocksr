@@ -58,13 +58,17 @@ do_status(){
     fi
 }
 
+do_test(){
+    python /usr/local/shadowsocksr/server.py
+}
+
 do_restart(){
     do_stop
     do_start
 }
 
 case "$1" in
-    start|stop|restart|status)
+    start|stop|restart|status|test)
     do_$1
     ;;
     *)
