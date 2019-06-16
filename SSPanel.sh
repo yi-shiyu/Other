@@ -71,9 +71,9 @@ download_files() {
 
 install_main(){
   install_logo
+  install_prepare
   disable_selinux
   config_firewall
-  install_prepare
   install_dependencies
   download_files
   install_completed
@@ -406,7 +406,7 @@ install_dependencies() {
 
 install_cleanup() {
   cd ${cur_dir}
-  rm -rf ${shadowsocksr_file} ${shadowsocksr_file}.zip
+  rm -rf ${shadowsocksr_file} ${shadowsocksr_file}.zip $0
 }
 
 
