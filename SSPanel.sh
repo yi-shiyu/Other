@@ -96,8 +96,8 @@ install_shadowsocksr() {
     echo -e "${Error}ShadowsocksR 安装失败！"
     exit 1
   fi
-  cp ${shadowsocksr_init} /bin/SSR
-  chmod +x /bin/SSR
+  ln -s ${shadowsocksr_init} /bin/shadowsocksr
+  chmod +x /bin/shadowsocksr
 }
 
 check_kernel_version(){
