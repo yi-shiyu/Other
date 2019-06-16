@@ -32,7 +32,7 @@ uninstall_shadowsocksr() {
       chkconfig --del ${service_name}
       rm -f ${shadowsocksr_init}
       rm -rf /usr/local/${shadowsocksr_file}
-      rm -f /bin/SSR
+      rm -f /bin/shadowsocksr
       echo
       echo -e "${Info}ShadowsocksR卸载完成！"
       echo
