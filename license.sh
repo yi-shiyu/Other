@@ -4,7 +4,7 @@
 
 do_start(){
     check_pid
-    if [ ! -z "$PID" ]; then
+    if [ -z "$PID" ]; then
         nohup /usr/local/IntelliJIDEA/LicenseServer -p 80 -u Shiyu >> /dev/null 2>&1 &
         echo "LicenseServer start!"
     else
@@ -14,7 +14,7 @@ do_start(){
 
 do_stop(){
     check_pid
-    if [ ! -z "$PID" ]; then
+    if [ -z "$PID" ]; then
         echo "LicenseServer not run!"
     else
         eval $(ps -ef | grep "LicenseServer -p" | awk '{print "kill "$2}')
