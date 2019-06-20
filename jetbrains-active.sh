@@ -14,7 +14,7 @@ uninstall_license() {
     chkconfig ${License_file} off
     chkconfig --del ${License_file}
     rm -rf ${License_path}
-    rm -f License_init
+    rm -f ${License_init}
     echo "Uninstall success!"
 }
 
