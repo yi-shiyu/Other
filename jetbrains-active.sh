@@ -8,7 +8,6 @@ License_init="/etc/init.d/LicenseServer"
 License_init_url="https://github.com/yi-shiyu/Other/raw/master/license.sh"
 License_file="LicenseServer"
 
-mkdir ${License_path}
 
 uninstall_license() {
     service ${License_file} stop
@@ -28,6 +27,7 @@ download() {
 }
 
 download_files() {
+    mkdir ${License_path}
     download "${License_path}/${License_file}" "${License_url}"
     download "${License_init}" "${License_init_url}"
 }
