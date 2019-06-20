@@ -3,9 +3,8 @@
 # description: phpstrom License Server
 
 do_start(){
-    PID=`ps -ef | grep -v grep | grep -i "[0-9] LicenseServer" | awk '{print $2}'`
+    check_pid
     if [ ! -z "$PID" ]; then
-        cd 
         nohup /usr/local/IntelliJIDEA/LicenseServer -p 80 -u Shiyu >> /dev/null 2>&1 &
         echo "LicenseServer start!"
     else
@@ -14,11 +13,11 @@ do_start(){
 }
 
 do_stop(){
-    PID=`ps -ef | grep -v grep | grep -i "[0-9] LicenseServer" | awk '{print $2}'`
+    check_pid
     if [ ! -z "$PID" ]; then
         echo "LicenseServer not run!"
     else
-        eval $(ps -ef | grep "[0-9] LicenseServer" | awk '{print "kill "$2}')
+        eval $(ps -ef | grep "LicenseServer -p" | awk '{print "kill "$2}')
         echo "LicenseServer stop!"
     fi
 }
@@ -28,8 +27,12 @@ do_restart(){
     do_start
 }
 
+check_pid() {
+    PID=`ps -ef | grep -v grep | grep -i "LicenseServer -p" | awk '{print $2}'`
+}
+
 do_status(){
-    PID=`ps -ef | grep -v grep | grep -i "[0-9] LicenseServer" | awk '{print $2}'`
+    check_pid
     if [ ! -z "$PID" ]; then
         echo "LicenseServer is running!"
     else
