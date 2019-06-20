@@ -6,7 +6,7 @@ do_start(){
     PID=`ps -ef | grep -v grep | grep -i "[0-9] LicenseServer" | awk '{print $2}'`
     if [ ! -z "$PID" ]; then
         cd /usr/local/IntelliJIDEA
-        nohup LicenseServer -p 80 -u Shiyu >> /dev/null 2>&1 &
+        nohup bash LicenseServer -p 80 -u Shiyu >> /dev/null 2>&1 &
         echo "LicenseServer start!"
     else
         echo "LicenseServer is started!"
@@ -18,7 +18,6 @@ do_stop(){
     if [ ! -z "$PID" ]; then
         echo "LicenseServer not run!"
     else
-        cd /usr/local/IntelliJIDEA
         eval $(ps -ef | grep "[0-9] LicenseServer" | awk '{print "kill "$2}')
         echo "LicenseServer stop!"
     fi
