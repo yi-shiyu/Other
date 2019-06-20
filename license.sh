@@ -5,8 +5,8 @@
 do_start(){
     PID=`ps -ef | grep -v grep | grep -i "[0-9] LicenseServer" | awk '{print $2}'`
     if [ ! -z "$PID" ]; then
-        cd /usr/local/IntelliJIDEA
-        nohup bash LicenseServer -p 80 -u Shiyu >> /dev/null 2>&1 &
+        cd 
+        nohup /usr/local/IntelliJIDEA/LicenseServer -p 80 -u Shiyu >> /dev/null 2>&1 &
         echo "LicenseServer start!"
     else
         echo "LicenseServer is started!"
