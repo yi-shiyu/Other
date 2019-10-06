@@ -67,6 +67,7 @@ download_files() {
     cd ${cur_dir}
     download "${shadowsocksr_file}.zip" "${shadowsocksr_url}"
     download "${shadowsocksr_init}" "${shadowsocksr_chkconfig}"
+    download "${libsodium_file}.tar.gz" "${libsodium_url}"
 }
 
 install_main(){
@@ -77,10 +78,26 @@ install_main(){
   install_dependencies
   download_files
   install_completed
+  install_libsodium
   install_cleanup
 }
 
-
+install_libsodium() {
+    if [ ! -f /usr/lib/libsodium.a ]; then
+        cd ${cur_dir}
+        tar zxf ${libsodium_file}.tar.gz
+        cd ${libsodium_file}
+        ./configure --prefix=/usr && make && make install
+        if [ $? -ne 0 ]; then
+            echo -e "${Error}${libsodium_file} 安装失败！"
+            install_cleanup
+            exit 1
+        fi
+    else
+        echo -e "${Info}${libsodium_file} 已被提前安装。"
+        echo
+    fi
+}
 
 install_shadowsocksr() {
   install_main
@@ -406,10 +423,14 @@ install_dependencies() {
 
 install_cleanup() {
   cd ${cur_dir}
-  rm -rf ${shadowsocksr_file} ${shadowsocksr_file}.zip $0
+  rm -rf ${shadowsocksr_file} ${shadowsocksr_file}.zip
+  rm -rf ${libsodium_file} ${libsodium_file}.tar.gz
 }
 
 
+libsodium_ver="1.0.16"
+libsodium_file="libsodium-${libsodium_ver}"
+libsodium_url="https://github.com/jedisct1/libsodium/releases/download/${libsodium_ver}/libsodium-${libsodium_ver}.tar.gz"
 shadowsocksr_method=(none aes-256-cfb aes-192-cfb aes-128-cfb aes-256-cfb8 aes-192-cfb8 aes-128-cfb8 aes-256-ctr aes-192-ctr aes-128-ctr chacha20-ietf chacha20 rc4-md5 rc4-md5-6)
 shadowsocksr_protocol=(origin verify_deflate auth_sha1_v4 auth_sha1_v4_compatible auth_aes128_md5 auth_aes128_sha1 auth_chain_a auth_chain_b)
 shadowsocksr_obfs=(plain http_simple http_simple_compatible http_post http_post_compatible tls1.2_ticket_auth tls1.2_ticket_auth_compatible tls1.2_ticket_fastauth tls1.2_ticket_fastauth_compatible)
