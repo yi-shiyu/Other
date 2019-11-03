@@ -30,12 +30,12 @@ cd ${path}
 
 config_file=${path}/config/.config.php
 
-sed -i "18s/1145141919810/${salt}/" ${config_file}
-sed -i "21s/http:\/\/url.com/${http}/" ${config_file}
-sed -i "25s/localhost/${host}/" ${config_file}
-sed -i "26s/sspanel/${datebase}/" ${config_file}
-sed -i "27s/root/${dateuser}/" ${config_file}
-sed -i "28s/sspanel/${pass}/" ${config_file}
+sed -i "18s|1145141919810|${salt}|" ${config_file}
+sed -i "21s|http://url.com|${http}|" ${config_file}
+sed -i "25s|localhost|${host}|" ${config_file}
+sed -i "26s|sspanel|${datebase}|" ${config_file}
+sed -i "27s|root|${dateuser}|" ${config_file}
+sed -i "28s|sspanel|${pass}|" ${config_file}
 
 php xcat createAdmin
 php xcat syncusers
