@@ -199,7 +199,7 @@ do_bbr(){
 	* hard nofile 51200
 EOF
 	ulimit -n 51200
-	cat >> /etc/sysctl.conf << "EOF"
+	cat >> /etc/sysctl.conf << EOF
 	fs.file-max = 51200
 	net.core.default_qdisc = fq
 	net.core.rmem_max = 67108864
