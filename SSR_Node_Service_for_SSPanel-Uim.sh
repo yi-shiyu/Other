@@ -93,7 +93,7 @@ yum clean all && rm -rf /var/cache/yum && yum update -y
 echo "Configurating EPEL release..."
 yum install epel-release -y && yum makecache
 echo "Install necessary package..."
-yum install python-pip git net-tools htop ntp -y
+yum install autoconf automake make curl curl-devel zlib-devel perl perl-devel cpio expat-devel gettext-devel asciidoc python python-devel python-setuptools pcre pcre-devel libtool libevent xmlto python-pip gzip openssl openssl-devel git net-tools gcc htop ntp unzip -y
 echo "Disabling firewalld..."
 systemctl stop firewalld && systemctl disable firewalld
 echo "Setting system timezone..."
