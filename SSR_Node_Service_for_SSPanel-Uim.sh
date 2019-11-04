@@ -93,14 +93,14 @@ yum clean all && rm -rf /var/cache/yum && yum update -y
 echo "Configurating EPEL release..."
 yum install epel-release -y && yum makecache
 echo "Install necessary package..."
-yum install python-pip git net-tools htop ntp automake make curl gzip git gcc unzip -y
+yum install python-pip git net-tools python-requests htop ntp automake make curl gzip git gcc unzip -y
 echo "Disabling firewalld..."
 systemctl stop firewalld && systemctl disable firewalld
 echo "Setting system timezone..."
 timedatectl set-timezone Asia/Taipei && systemctl stop ntpd.service && ntpdate us.pool.ntp.org
 echo "Installing libsodium..."
 yum install libsodium -y
-echo "Installing Shadowsocksr server from GitHub..."	
+echo "Installing Shadowsocksr server from GitHub..."
 cd /tmp && wget https://github.com/yi-shiyu/Other/raw/master/shadowsocks-manyuser.zip && unzip shadowsocks-manyuser.zip && mv shadowsocks-manyuser ${shadowsocks_path}
 mv -f ${shadowsocks_path} /usr/local
 cd /usr/local/${shadowsocks_path}
