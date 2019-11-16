@@ -17,7 +17,7 @@ echo "Shadowsocksr server installation script for CentOS 7 x64"
 
 echo "Press Y for continue the installation process, or press any key else to exit."
 read answer
-if [[ "${answer}" != "y" || "${answer}" != "Y" ]]; then
+if [[ "${answer}" != "y" && "${answer}" != "Y" ]]; then
     echo -e "Installation has been canceled."
     exit 0
 fi
