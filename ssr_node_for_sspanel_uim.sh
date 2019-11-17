@@ -3,15 +3,18 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
 cat << EOF
-____    _       _                 
-/ ___|  | |__   (_)  _   _   _   _ 
-\___ \  | '_ \  | | | | | | | | | |
-___) | | | | | | | | |_| | | |_| |
-|____/  |_| |_| |_|  \__, |  \__,_|
-|___/         
+
+███████╗ ██╗  ██╗ ██╗ ██╗   ██╗ ██╗   ██╗
+██╔════╝ ██║  ██║ ██║ ╚██╗ ██╔╝ ██║   ██║
+███████╗ ███████║ ██║  ╚████╔╝  ██║   ██║
+╚════██║ ██╔══██║ ██║   ╚██╔╝   ██║   ██║
+███████║ ██║  ██║ ██║    ██║    ╚██████╔╝
+╚══════╝ ╚═╝  ╚═╝ ╚═╝    ╚═╝     ╚═════╝ 
+
 Modify: Shiyu
 
 EOF
+
 echo "Shadowsocksr server installation script for CentOS 7 x64"
 [ $(id -u) != "0" ] && { echo "Error: You must be root to run this script!"; exit 1; }
 
@@ -30,6 +33,7 @@ read_parameter(){
         echo "/usr/local/${shadowsocks_path} is existed."
         exit 0
     fi
+    
 
     echo -e "Please select the way your node server connection method:"
     echo -e "\t1. WebAPI"
@@ -82,7 +86,7 @@ read_parameter(){
 
     while true; do
         echo -n "Do you want to enable BBR feature(from mainline kernel) and optimizate the system?(Y/N)"
-        read is_bbr
+        read is_bbre
         if [[ ${is_bbr} != "y" && ${is_bbr} != "Y" && ${is_bbr} != "N" && ${is_bbr} != "n" ]]; then
           echo -n "Bad answer! Please only input number Y or N"
       else
@@ -96,6 +100,22 @@ read_parameter(){
         if [[ ${is_service} != "y" && ${is_service} != "Y" && ${is_service} != "N" && ${is_service} != "n" ]]; then
             echo -n "Bad answer! Please only input number Y or N"
         else
+            if [[ ${is_service} == "y" || ${is_service} == "Y" ]]; then
+                cat << EOF
+===============================================================
+Start Service: systemctl start ${shadowsocks_path}
+---------------------------------------------------------------
+Automatic Start: systemctl enable ${shadowsocks_path}
+---------------------------------------------------------------
+Stop  Service: systemctl stop ${shadowsocks_path}
+---------------------------------------------------------------
+Disable automatic start: systemctl disable ${shadowsocks_path}
+===============================================================
+
+The first and second options are automatically executed after the script is completed!
+
+EOF
+            fi
             break
       fi
     done
