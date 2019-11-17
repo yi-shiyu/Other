@@ -86,7 +86,7 @@ read_parameter(){
 
     while true; do
         echo -n "Do you want to enable BBR feature(from mainline kernel) and optimizate the system?(Y/N)"
-        read is_bbre
+        read is_bbr
         if [[ ${is_bbr} != "y" && ${is_bbr} != "Y" && ${is_bbr} != "N" && ${is_bbr} != "n" ]]; then
           echo -n "Bad answer! Please only input number Y or N"
       else
