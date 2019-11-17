@@ -18,13 +18,6 @@ EOF
 echo "Shadowsocksr server installation script for CentOS 7 x64"
 [ $(id -u) != "0" ] && { echo "Error: You must be root to run this script!"; exit 1; }
 
-echo "Press Y for continue the installation process, or press any key else to exit."
-read answer
-if [[ "${answer}" != "y" && "${answer}" != "Y" ]]; then
-    echo -e "Installation has been canceled."
-    exit 0
-fi
-
 read_parameter(){
     echo "Please input service name."
     read shadowsocks_path
@@ -117,11 +110,17 @@ The first and second options are automatically executed after the script is comp
 EOF
             fi
             break
-      fi
+        fi
     done
 }
 
 install_ssr(){
+    echo "Press Y for continue the installation process, or press any key else to exit."
+    read answer
+    if [[ "${answer}" != "y" && "${answer}" != "Y" ]]; then
+        echo -e "Installation has been canceled."
+        exit 0
+    fi
     echo "Install necessary package..."
     yum install epel-release python-pip git net-tools python-requests htop ntp automake make curl gzip git gcc unzip libsodium -y
     echo "Disabling firewalld..."
