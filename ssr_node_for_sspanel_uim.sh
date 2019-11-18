@@ -137,6 +137,8 @@ install_ssr(){
     pip install --upgrade pip setuptools
     pip install -r requirements.txt
     echo "Generating config file..."
+    chmod +x *.sh
+    chmod +x shadowsocks/*.sh
     cp apiconfig.py userapiconfig.py
     cp config.json user-config.json
 }
