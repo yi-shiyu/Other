@@ -133,6 +133,7 @@ install_ssr(){
     cd /tmp && wget https://github.com/yi-shiyu/Other/raw/master/shadowsocks-manyuser.zip && unzip shadowsocks-manyuser.zip && mv shadowsocks-manyuser ${shadowsocks_path}
     mv -f ${shadowsocks_path} /usr/local
     cd /usr/local/${shadowsocks_path}
+    easy_install pip
     pip install --upgrade pip setuptools
     pip install -r requirements.txt
     echo "Generating config file..."
