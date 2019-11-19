@@ -122,7 +122,7 @@ install_ssr(){
         exit 0
     fi
     echo "Install necessary package..."
-    yum install epel-release python-pip git net-tools python-requests htop ntp automake make curl gzip git gcc unzip libsodium -y
+    yum install epel-release unzip libsodium -y
     echo "Disabling firewalld..."
     systemctl stop firewalld && systemctl disable firewalld
     echo "Set time..."
