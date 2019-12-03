@@ -4,12 +4,12 @@ export PATH
 
 cat << EOF
 
-███████╗ ██╗  ██╗ ██╗ ██╗   ██╗ ██╗   ██╗
-██╔════╝ ██║  ██║ ██║ ╚██╗ ██╔╝ ██║   ██║
-███████╗ ███████║ ██║  ╚████╔╝  ██║   ██║
-╚════██║ ██╔══██║ ██║   ╚██╔╝   ██║   ██║
-███████║ ██║  ██║ ██║    ██║    ╚██████╔╝
-╚══════╝ ╚═╝  ╚═╝ ╚═╝    ╚═╝     ╚═════╝ 
+██████╗ ██╗  ██╗ ██╗ ██╗     ██╗ ██╗   ██╗
+██╔═══╝ ██║  ██║ ██║ ╚██╗ ██╔╝  ██║   ██║
+██████╗ ██████║ ██║   ╚████╔╝   ██║   ██║
+╚═══██║ ██╔═██║ ██║    ╚██╔╝     ██║   ██║
+██████║ ██║  ██║ ██║     ██║       ╚█████╔╝
+╚═════╝ ╚═╝  ╚═╝ ╚═╝     ╚═╝        ╚════╝ 
 
 Modify: Shiyu
 
@@ -122,7 +122,7 @@ install_ssr(){
         exit 0
     fi
     echo "Install necessary package..."
-    yum install epel-release unzip python-setuptools -y
+    yum install wget epel-release unzip python-setuptools -y
     echo "Disabling firewalld..."
     systemctl stop firewalld && systemctl disable firewalld
     echo "Set time..."
