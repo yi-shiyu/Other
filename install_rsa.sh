@@ -16,7 +16,7 @@ echo 'Input key download url'
 read url
 
 while true; do
-    echo -n "Need save password login?(Y/N)"
+    echo -n "Disable password login?(Y/N)"
     read pass
     if [[ ${pass} != "y" && ${pass} != "Y" && ${pass} != "N" && ${pass} != "n" ]]; then
         echo -n "Bad answer! Please only input Y or N"
