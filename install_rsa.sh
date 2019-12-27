@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 #  _____  _    _  _____ __     __ _    _ 
 # / ____|| |  | ||_   _|\ \   / /| |  | |
 #| (___  | |__| |  | |   \ \_/ / | |  | |
@@ -9,7 +7,6 @@
 #|_____/ |_|  |_||_____|   |_|    \____/ 
 
 echo "Welcome to SSH Key Installer"
-
 echo 'Input key download url.'
 read url
 
@@ -22,7 +19,6 @@ while true; do
         break
     fi
 done
-
 
 DISABLE_PW_LOGIN=0
 
