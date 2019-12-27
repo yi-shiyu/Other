@@ -46,7 +46,7 @@ if [ ! -f "${HOME}/.ssh/authorized_keys" ]; then
 fi
 
 #get key from server
-curl -D /tmp/headers.txt ${url} >/tmp/key.txt 2>/dev/null
+curl -D /tmp/headers.txt "${url}" >/tmp/key.txt 2>/dev/null
 HTTP_CODE=$(sed -n 's/HTTP\/1\.[0-9] \([0-9]\+\).*/\1/p' /tmp/headers.txt | tail -n 1)
 if [ $HTTP_CODE -ne 200 ]; then
     echo "Error: CloudCone API server went away"; exit 1;
