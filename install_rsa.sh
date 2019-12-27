@@ -75,5 +75,6 @@ echo 'Key installed successfully'
 if [ ${DISABLE_PW_LOGIN} -eq 1 ]; then
     sed -i.save 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
     echo 'Disabled password login in SSH'
-    echo 'Restart SSHd manually!'
+    echo 'Restart SSHd!'
+    service sshd restart
 fi
