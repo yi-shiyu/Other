@@ -109,6 +109,8 @@ systemctl disable firewalld
 cd /usr/share/nginx/html/
 rm -rf ./*
 wget https://github.com/yi-shiyu/Other/raw/master/html5up.zip
+wget https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
+wget https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-win.zip
 yum install unzip -y
 unzip html5up.zip
 rm -f html5up.zip
@@ -183,9 +185,18 @@ cat << EOF
 安装完成。
 
 trojan配置文件位置$CONFIGPATH
+nginx网站目录位置/usr/share/nginx/html/
 
 停止systemctl stop trojan
 启动systemctl start trojan
+
+Windows客户端下载https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-win.zip
+备用下载https://$url/trojan-1.14.0-win.zip
+
+Android客户端下载https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
+备用下载https://$url/app-release.apk
+
+使用方法参见网址https://evlan.cc/archives/trojan-nginx.html
 
 ++++++++++++++++++++++++
 EOF
