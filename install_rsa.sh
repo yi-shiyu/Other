@@ -74,6 +74,6 @@ echo 'Key installed successfully'
 if [[ "${pass}" == "y" || "${pass}" == "Y" ]]; then
     sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
     echo 'Disabled password login in SSH'
-    echo 'Restart SSHd!'
-    service sshd restart
+    echo 'Restart SSHD'
+    systemctl restart sshd
 fi
