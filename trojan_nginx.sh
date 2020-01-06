@@ -123,11 +123,7 @@ sleep 1
 curl https://get.acme.sh | sh
 
 ~/.acme.sh/acme.sh --issue -d $url --webroot /usr/share/nginx/html/
-systemctl stop nginx.service
-~/.acme.sh/acme.sh --installcert -d $url \
---key-file $INSTALLPREFIX/$NAME/private.key \
---fullchain-file $INSTALLPREFIX/$NAME/fullchain.cer \
---reloadcmd "systemctl force-reload nginx.service"
+~/.acme.sh/acme.sh --installcert -d $url --key-file $INSTALLPREFIX/$NAME/private.key --fullchain-file $INSTALLPREFIX/$NAME/fullchain.cer
 
 echo '安装trojan配置文件'
 cat > $CONFIGPATH << EOF
