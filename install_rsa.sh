@@ -57,7 +57,7 @@ fi
 #get key from server
 curl -D /tmp/headers.txt -L ${url} >/tmp/key.txt >> /dev/null 2>&1 &
 HTTP_CODE=$(sed -n 's/HTTP\/1\.[0-9] \([0-9]\+\).*/\1/p' /tmp/headers.txt | tail -n 1)
-if [ $HTTP_CODE -ne 200 ]; then
+if [[ $HTTP_CODE -ne 200 ]]; then
     echo "Error: download server error"; exit 1;
 fi
 
