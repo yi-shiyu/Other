@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 
 cat << EOF
    _____   __  __  ____ __  __  __  __
@@ -105,6 +104,8 @@ systemctl enable nginx.service
 systemctl start nginx.service
 systemctl stop firewalld
 systemctl disable firewalld
+systemctl stop iptables
+systemctl disable iptables
 
 cd /usr/share/nginx/html/
 rm -rf ./*
