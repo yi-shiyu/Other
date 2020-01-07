@@ -90,40 +90,7 @@ EOF
     fi
 fi
 
-rm -rf "$TMPDIR"
-
-echo '安装trojan完成'
-
-echo '安装Nginx'
-sleep 1
-
-cd ~
-rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
-yum install -y nginx
-systemctl enable nginx.service
-systemctl start nginx.service
-systemctl stop firewalld
-systemctl disable firewalld
-systemctl stop iptables
-systemctl disable iptables
-
-cd /usr/share/nginx/html/
-rm -rf ./*
-wget https://github.com/yi-shiyu/Other/raw/master/html5up.zip
-wget https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
-wget https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-win.zip
-yum install unzip -y
-unzip html5up.zip
-rm -f html5up.zip
-
-echo '安装Nginx完成'
-
-echo '申请https证书'
-sleep 1
-
-curl https://get.acme.sh | sh
-
-~/.acme.sh/acme.sh --issue -d $url --webroot /usr/share/nginx/html/
+systemctl enable trojan.service
 
 echo '安装trojan配置文件'
 cat > $CONFIGPATH << EOF
@@ -173,7 +140,38 @@ cat > $CONFIGPATH << EOF
 }
 EOF
 
-systemctl enable trojan.service
+rm -rf "$TMPDIR"
+
+echo '安装trojan完成'
+
+echo '安装Nginx'
+
+cd ~
+rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+yum install -y nginx
+systemctl enable nginx.service
+systemctl start nginx.service
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl stop iptables
+systemctl disable iptables
+
+cd /usr/share/nginx/html/
+rm -rf ./*
+wget https://github.com/yi-shiyu/Other/raw/master/html5up.zip
+wget https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
+wget https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-win.zip
+yum install unzip -y
+unzip html5up.zip
+rm -f html5up.zip
+
+echo '安装Nginx完成'
+
+echo '申请https证书'
+
+curl https://get.acme.sh | sh
+
+~/.acme.sh/acme.sh --issue -d $url --webroot /usr/share/nginx/html/
 ~/.acme.sh/acme.sh --installcert -d $url --key-file $INSTALLPREFIX/$NAME/private.key --fullchain-file $INSTALLPREFIX/$NAME/fullchain.cer --reloadcmd "systemctl restart trojan"
 
 cat << EOF
