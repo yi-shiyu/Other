@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
-export PATH
+
 echo "请在导入数据库数据后执行此脚本。"
 echo "输入网站网址："
 read http
