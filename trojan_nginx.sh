@@ -26,10 +26,10 @@ warning(){
 
 local_addr=`curl ipv4.icanhazip.com`
 warning "本机IP: ${local_addr}"
-read -p "输入绑定本机IP地址的域名: " url
+read -p "输入绑定本机IP地址的域名 " url
 
 real_addr=`ping ${url} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
-warning "域名解析IP: ${real_addr}"
+warning "域名解析IP ${real_addr}"
 
 [[ ${real_addr} != ${local_addr} ]] && error "域名解析不到本服务器!" && exit 1
 
