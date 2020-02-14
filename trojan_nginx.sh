@@ -49,7 +49,7 @@ info "开始安装trojan..."
 sleep 3
 
 NAME="trojan"
-VERSION="1.14.0"
+VERSION="1.14.1"
 TARBALL="${NAME}-${VERSION}-linux-amd64.tar.xz"
 DOWNLOADURL="https://github.com/trojan-gfw/${NAME}/releases/download/v${VERSION}/${TARBALL}"
 TMPDIR="$(mktemp -d)"
@@ -63,7 +63,7 @@ SYSTEMDPATH="${SYSTEMDPREFIX}/${NAME}.service"
 cd ${TMPDIR}
 
 info "下载 ${NAME} ${VERSION}"
-curl -LO ${DOWNLOADURL} || wget ${DOWNLOADURL}
+curl -LO --progress-bar ${DOWNLOADURL} || wget -q --show-progress ${DOWNLOADURL}
 
 info "解压 ${NAME} ${VERSION}"
 tar xf ${TARBALL}
@@ -85,8 +85,10 @@ After=network.target network-online.target nss-lookup.target mysql.service maria
 Type=simple
 StandardError=journal
 ExecStart=${BINARYPATH} ${CONFIGPATH}
-ExecReload=/bin/kill -HUP \$MAINPID
 ExecStop=/bin/kill -2 \$MAINPID
+ExecReload=/bin/kill -HUP \$MAINPID
+Restart=on-failure
+RestartSec=3s
 
 [Install]
 WantedBy=multi-user.target
@@ -174,7 +176,8 @@ cd /usr/share/nginx/html/
 rm -rf ./*
 wget https://github.com/yi-shiyu/Other/raw/master/html5up.zip
 wget https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
-wget https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-win.zip
+wget https://github.com/trojan-gfw/trojan/releases/download/v${VERSION}/trojan-${VERSION}-win.zip
+  
 yum install unzip -y
 unzip html5up.zip
 rm -f html5up.zip
@@ -200,8 +203,9 @@ nginx网站目录位置/usr/share/nginx/html/
 启动systemctl start ${NAME}.service
 重启systemctl restart ${NAME}.service
 
-Windows客户端下载https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-win.zip
-备用下载https://${url}/trojan-1.14.0-win.zip
+Windows客户端下载https://github.com/trojan-gfw/trojan/releases/download/v${VERSION}/trojan-${VERSION}-win.zip
+备用下载https://${url}/trojan-${VERSION}-win.zip
+官网下载https://github.com/trojan-gfw/trojan/releases
 
 Android客户端下载https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
 备用下载https://{$url}/app-release.apk
