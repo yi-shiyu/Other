@@ -25,13 +25,13 @@ warning(){
 [[ $EUID -ne 0 ]] && error "请以root身份运行此脚本。" && exit 1
 
 local_addr=`curl ipv4.icanhazip.com`
-warning "本机IP: ${local_addr}"
-read -p "输入绑定本机IP地址的域名 " url
+read -p "输入绑定本机IP地址的域名: " url
 
 real_addr=`ping ${url} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
-warning "域名解析IP ${real_addr}"
+warning "VPS地址${local_addr} 域名解析地址${real_addr}"
 
 [[ ${real_addr} != ${local_addr} ]] && error "域名解析不到本服务器!" && exit 1
+info "域名解析正确!"
 
 read -p "请设置Trojan链接密码: " trojan_passwd
 
@@ -46,7 +46,6 @@ function prompt() {
 }
 
 info "开始安装trojan..."
-sleep 3
 
 NAME="trojan"
 VERSION="1.14.1"
@@ -152,7 +151,6 @@ rm -rf ${TMPDIR}
 info "安装trojan完成"
 
 info "安装Nginx"
-sleep 3
 
 cd ~
 rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
