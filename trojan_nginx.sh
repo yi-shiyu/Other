@@ -12,18 +12,28 @@ trojan+Nginx一键安装
 通过魔改trojan官方脚本而成https://github.com/trojan-gfw/trojan
 EOF
 
+info(){
+    echo -e "\033[32m提示: \033[0m$1"
+}
+error(){
+    echo -e "\033[31m错误: \033[0m$1"
+}
+warning(){
+    echo -e "\033[33m注意: \033[0m$1"
+}
+
+[[ $EUID -ne 0 ]] && error "请以root身份运行此脚本。" && exit 1
+
 local_addr=`curl ipv4.icanhazip.com`
-echo '本机IP:' $local_addr
-echo '输入绑定本机IP地址的域名'
-read url
+warning "本机IP: ${local_addr}"
+read -p "输入绑定本机IP地址的域名: " url
+
 real_addr=`ping ${url} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
-echo '域名解析IP:' $real_addr
-if [[ $real_addr != $local_addr ]] ; then
-    echo '域名解析失败!'
-    exit 1
-fi
-echo '输入trojan连接密码'
-read trojan_passwd
+warning "域名解析IP: ${real_addr}"
+
+[[ $real_addr != $local_addr ]] && error "域名解析不到本服务器!" && exit 1
+
+read -p "请设置Trojan链接密码: " trojan_passwd
 
 function prompt() {
     while true; do
@@ -35,21 +45,16 @@ function prompt() {
     done
 }
 
-if [[ $(id -u) != 0 ]]; then
-    echo Please run this script as root.
-    exit 1
-fi
+info "开始安装trojan..."
+sleep 3
 
-echo '安装trojan'
-sleep 1
-
-NAME=trojan
-VERSION=1.14.0
+NAME="trojan"
+VERSION="1.14.0"
 TARBALL="$NAME-$VERSION-linux-amd64.tar.xz"
 DOWNLOADURL="https://github.com/trojan-gfw/$NAME/releases/download/v$VERSION/$TARBALL"
 TMPDIR="$(mktemp -d)"
-INSTALLPREFIX=/usr/local
-SYSTEMDPREFIX=/etc/systemd/system
+INSTALLPREFIX="/usr/local"
+SYSTEMDPREFIX="/etc/systemd/system"
 
 BINARYPATH="$INSTALLPREFIX/$NAME/$NAME"
 CONFIGPATH="$INSTALLPREFIX/$NAME/config.json"
@@ -57,43 +62,43 @@ SYSTEMDPATH="$SYSTEMDPREFIX/$NAME.service"
 
 cd "$TMPDIR"
 
-echo '下载' $NAME $VERSION
+info "下载 ${NAME} ${VERSION}"
 curl -LO "$DOWNLOADURL" || wget "$DOWNLOADURL"
 
-echo '解压' $NAME $VERSION
+info "解压 ${NAME} ${VERSION}"
 tar xf "$TARBALL"
 cd "$NAME"
 
-echo '安装' $NAME $VERSION '到' $BINARYPATH
+info "安装 ${NAME} ${VERSION} 到 ${BINARYPATH}"
 install -Dm755 "$NAME" "$BINARYPATH"
 
 if [[ -d "$SYSTEMDPREFIX" ]]; then
-    echo '安装' $NAME '系统服务到' $SYSTEMDPATH
-    if ! [[ -f "$SYSTEMDPATH" ]] || prompt "已存在系统服务 $SYSTEMDPATH, 覆盖?"; then
+    info "安装 ${NAME} 系统服务到 ${SYSTEMDPATH}"
+    if [[ ! -f "$SYSTEMDPATH" ]] || prompt "已存在系统服务 ${SYSTEMDPATH}, 覆盖?"; then
         cat > "$SYSTEMDPATH" << EOF
 [Unit]
-Description=$NAME
-Documentation=https://trojan-gfw.github.io/$NAME/config https://trojan-gfw.github.io/$NAME/
+Description=${NAME}
+Documentation=https://trojan-gfw.github.io/${NAME}/config https://trojan-gfw.github.io/${NAME}/
 After=network.target network-online.target nss-lookup.target mysql.service mariadb.service mysqld.service
 
 [Service]
 Type=simple
 StandardError=journal
-ExecStart="$BINARYPATH" "$CONFIGPATH"
+ExecStart="${BINARYPATH}" "${CONFIGPATH}"
 ExecReload=/bin/kill -HUP \$MAINPID
+ExecStop=/bin/kill -2 \$MAINPID
 
 [Install]
 WantedBy=multi-user.target
 EOF
+        systemctl enable trojan.service
     else
-        echo '跳过安装系统服务' $NAME
+        info "跳过安装系统服务 ${NAME}"
     fi
 fi
 
-systemctl enable trojan.service
-
-echo '安装trojan配置文件'
-cat > $CONFIGPATH << EOF
+info "安装trojan配置文件"
+cat > ${CONFIGPATH} << EOF
 {
     "run_type": "server",
     "local_addr": "0.0.0.0",
@@ -101,12 +106,12 @@ cat > $CONFIGPATH << EOF
     "remote_addr": "127.0.0.1",
     "remote_port": 80,
     "password": [
-        "$trojan_passwd"
+        "${trojan_passwd}"
     ],
     "log_level": 1,
     "ssl": {
-        "cert": "$INSTALLPREFIX/$NAME/fullchain.cer",
-        "key": "$INSTALLPREFIX/$NAME/private.key",
+        "cert": "${INSTALLPREFIX}/${NAME}/fullchain.cer",
+        "key": "${INSTALLPREFIX}/${NAME}/private.key",
         "key_password": "",
         "cipher": "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256",
         "cipher_tls13":"TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
@@ -140,21 +145,19 @@ cat > $CONFIGPATH << EOF
 }
 EOF
 
-rm -rf "$TMPDIR"
+rm -rf "${TMPDIR}"
 
-echo '安装trojan完成'
+info "安装trojan完成"
 
-echo '安装Nginx'
+info "安装Nginx"
+sleep 3
 
 cd ~
 rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
 yum install -y nginx
 systemctl enable nginx.service
 systemctl start nginx.service
-systemctl stop firewalld
-systemctl disable firewalld
-systemctl stop iptables
-systemctl disable iptables
+
 
 cd /usr/share/nginx/html/
 rm -rf ./*
