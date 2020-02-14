@@ -31,7 +31,7 @@ read -p "输入绑定本机IP地址的域名: " url
 real_addr=`ping ${url} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
 warning "域名解析IP: ${real_addr}"
 
-[[ $real_addr != $local_addr ]] && error "域名解析不到本服务器!" && exit 1
+[[ ${real_addr} != ${local_addr} ]] && error "域名解析不到本服务器!" && exit 1
 
 read -p "请设置Trojan链接密码: " trojan_passwd
 
@@ -50,48 +50,48 @@ sleep 3
 
 NAME="trojan"
 VERSION="1.14.0"
-TARBALL="$NAME-$VERSION-linux-amd64.tar.xz"
-DOWNLOADURL="https://github.com/trojan-gfw/$NAME/releases/download/v$VERSION/$TARBALL"
+TARBALL="${NAME}-${VERSION}-linux-amd64.tar.xz"
+DOWNLOADURL="https://github.com/trojan-gfw/${NAME}/releases/download/v${VERSION}/${TARBALL}"
 TMPDIR="$(mktemp -d)"
 INSTALLPREFIX="/usr/local"
 SYSTEMDPREFIX="/etc/systemd/system"
 
-BINARYPATH="$INSTALLPREFIX/$NAME/$NAME"
-CONFIGPATH="$INSTALLPREFIX/$NAME/config.json"
-SYSTEMDPATH="$SYSTEMDPREFIX/$NAME.service"
+BINARYPATH="${INSTALLPREFIX}/${NAME}/${NAME}"
+CONFIGPATH="${INSTALLPREFIX}/${NAME}/config.json"
+SYSTEMDPATH="${SYSTEMDPREFIX}/${NAME}.service"
 
-cd "$TMPDIR"
+cd ${TMPDIR}
 
 info "下载 ${NAME} ${VERSION}"
-curl -LO "$DOWNLOADURL" || wget "$DOWNLOADURL"
+curl -LO ${DOWNLOADURL} || wget ${DOWNLOADURL}
 
 info "解压 ${NAME} ${VERSION}"
-tar xf "$TARBALL"
-cd "$NAME"
+tar xf ${TARBALL}
+cd ${NAME}
 
 info "安装 ${NAME} ${VERSION} 到 ${BINARYPATH}"
-install -Dm755 "$NAME" "$BINARYPATH"
+install -Dm755 ${NAME} ${BINARYPATH}
 
-if [[ -d "$SYSTEMDPREFIX" ]]; then
+if [[ -d ${SYSTEMDPREFIX} ]]; then
     info "安装 ${NAME} 系统服务到 ${SYSTEMDPATH}"
-    if [[ ! -f "$SYSTEMDPATH" ]] || prompt "已存在系统服务 ${SYSTEMDPATH}, 覆盖?"; then
-        cat > "$SYSTEMDPATH" << EOF
+    if [[ ! -f ${SYSTEMDPATH} ]] || prompt "已存在系统服务 ${SYSTEMDPATH}, 覆盖?"; then
+        cat > ${SYSTEMDPATH} << EOF
 [Unit]
-Description=${NAME}
+Description=Service For ${NAME}
 Documentation=https://trojan-gfw.github.io/${NAME}/config https://trojan-gfw.github.io/${NAME}/
 After=network.target network-online.target nss-lookup.target mysql.service mariadb.service mysqld.service
 
 [Service]
 Type=simple
 StandardError=journal
-ExecStart="${BINARYPATH}" "${CONFIGPATH}"
+ExecStart=${BINARYPATH} ${CONFIGPATH}
 ExecReload=/bin/kill -HUP \$MAINPID
 ExecStop=/bin/kill -2 \$MAINPID
 
 [Install]
 WantedBy=multi-user.target
 EOF
-        systemctl enable trojan.service
+        systemctl enable ${NAME}.service
     else
         info "跳过安装系统服务 ${NAME}"
     fi
@@ -145,7 +145,7 @@ cat > ${CONFIGPATH} << EOF
 }
 EOF
 
-rm -rf "${TMPDIR}"
+rm -rf ${TMPDIR}
 
 info "安装trojan完成"
 
@@ -157,6 +157,17 @@ rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0
 yum install -y nginx
 systemctl enable nginx.service
 systemctl start nginx.service
+systemctl status firewalld > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    firewall-cmd --add-port=80/tcp --permanent
+    firewall-cmd --add-port=80/udp --permanent
+    firewall-cmd --add-port=443/tcp --permanent
+    firewall-cmd --add-port=443/udp --permanent
+
+    firewall-cmd --reload
+           
+    info "443 80 端口已开放"
+fi
 
 
 cd /usr/share/nginx/html/
@@ -168,31 +179,32 @@ yum install unzip -y
 unzip html5up.zip
 rm -f html5up.zip
 
-echo '安装Nginx完成'
+info "安装Nginx完成"
 
-echo '申请https证书'
+info "申请https证书"
 
 curl https://get.acme.sh | sh
 
-~/.acme.sh/acme.sh --issue -d $url --webroot /usr/share/nginx/html/
-~/.acme.sh/acme.sh --installcert -d $url --key-file $INSTALLPREFIX/$NAME/private.key --fullchain-file $INSTALLPREFIX/$NAME/fullchain.cer --reloadcmd "systemctl restart trojan"
+~/.acme.sh/acme.sh --issue -d ${url} --webroot /usr/share/nginx/html/
+~/.acme.sh/acme.sh --installcert -d ${url} --key-file ${INSTALLPREFIX}/${NAME}/private.key --fullchain-file ${INSTALLPREFIX}/${NAME}/fullchain.cer --reloadcmd "systemctl restart ${NAME}.service"
 
 cat << EOF
 ++++++++++++++++++++++++
 
 安装完成。
 
-trojan配置文件位置$CONFIGPATH
+trojan配置文件位置${CONFIGPATH}
 nginx网站目录位置/usr/share/nginx/html/
 
-停止systemctl stop trojan
-启动systemctl start trojan
+停止systemctl stop ${NAME}.service
+启动systemctl start ${NAME}.service
+重启systemctl restart ${NAME}.service
 
 Windows客户端下载https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-win.zip
-备用下载https://$url/trojan-1.14.0-win.zip
+备用下载https://${url}/trojan-1.14.0-win.zip
 
 Android客户端下载https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
-备用下载https://$url/app-release.apk
+备用下载https://{$url}/app-release.apk
 
 使用方法参见网址https://evlan.cc/archives/trojan-nginx.html
 
