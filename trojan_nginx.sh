@@ -21,10 +21,22 @@ error(){
 warning(){
     echo -e "\033[33m注意: \033[0m$1"
 }
+install_(){
+    local commands=$1
+    info "检查 ${commands}..."
+      if [[ ! -f "/usr/bin/${commands}" ]]; then
+        if [[ ! -f "/usr/sbin/${commands}" ]]; then
+          yum install -y ${commands} > /dev/null 2>&1
+        fi
+      fi
+}
+
+install_ unzip
+install_ curl
 
 [[ $EUID -ne 0 ]] && error "请以root身份运行此脚本。" && exit 1
 
-local_addr=`curl ipv4.icanhazip.com`
+local_addr=`curl -L --progress-bar ipv4.icanhazip.com`
 read -p "输入绑定本机IP地址的域名: " url
 
 real_addr=`ping ${url} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
@@ -45,7 +57,7 @@ function prompt() {
     done
 }
 
-info "开始安装trojan..."
+info "安装trojan..."
 
 NAME="trojan"
 VERSION="1.14.1"
@@ -61,15 +73,14 @@ SYSTEMDPATH="${SYSTEMDPREFIX}/${NAME}.service"
 
 cd ${TMPDIR}
 
-info "下载 ${NAME} ${VERSION}"
-curl -LO --progress-bar ${DOWNLOADURL} || wget -q --show-progress ${DOWNLOADURL}
+info "下载 ${NAME} ${VERSION}..."
+curl -LO --progress-bar ${DOWNLOADURL}
 
-info "解压 ${NAME} ${VERSION}"
-tar xf ${TARBALL}
+tar xf ${TARBALL} > /dev/null 2>&1
 cd ${NAME}
 
 info "安装 ${NAME} ${VERSION} 到 ${BINARYPATH}"
-install -Dm755 ${NAME} ${BINARYPATH}
+install -Dm755 ${NAME} ${BINARYPATH} > /dev/null 2>&1
 
 if [[ -d ${SYSTEMDPREFIX} ]]; then
     info "安装 ${NAME} 系统服务到 ${SYSTEMDPATH}"
@@ -92,7 +103,7 @@ RestartSec=3s
 [Install]
 WantedBy=multi-user.target
 EOF
-        systemctl enable ${NAME}.service
+        systemctl enable ${NAME}.service > /dev/null 2>&1
     else
         info "跳过安装系统服务 ${NAME}"
     fi
@@ -150,49 +161,51 @@ rm -rf ${TMPDIR}
 
 info "安装trojan完成"
 
-info "安装Nginx"
+info "安装Nginx..."
 
 cd ~
-rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
-yum install -y nginx
-systemctl enable nginx.service
-systemctl start nginx.service
+rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm > /dev/null 2>&1
+yum install -y nginx > /dev/null 2>&1
+systemctl enable nginx.service > /dev/null 2>&1
+systemctl start nginx.service > /dev/null 2>&1
+info "Nginx已启动并设置开机自启"
+
 systemctl status firewalld > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-    firewall-cmd --add-port=80/tcp --permanent
-    firewall-cmd --add-port=80/udp --permanent
-    firewall-cmd --add-port=443/tcp --permanent
-    firewall-cmd --add-port=443/udp --permanent
+    info "配置防火墙..."
+    firewall-cmd --add-port=80/tcp --permanent > /dev/null 2>&1
+    firewall-cmd --add-port=80/udp --permanent > /dev/null 2>&1
+    firewall-cmd --add-port=443/tcp --permanent > /dev/null 2>&1
+    firewall-cmd --add-port=443/udp --permanent > /dev/null 2>&1
 
     firewall-cmd --reload
            
     info "443 80 端口已开放"
 fi
 
-
+info "配置Nginx网站文件..."
 cd /usr/share/nginx/html/
 rm -rf ./*
-wget https://github.com/yi-shiyu/Other/raw/master/html5up.zip
-wget https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
-wget https://github.com/trojan-gfw/trojan/releases/download/v${VERSION}/trojan-${VERSION}-win.zip
-  
-yum install unzip -y
-unzip html5up.zip
+curl -LO --progress-bar https://github.com/yi-shiyu/Other/raw/master/html5up.zip
+curl -LO --progress-bar https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
+curl -LO --progress-bar https://github.com/trojan-gfw/trojan/releases/download/v${VERSION}/trojan-${VERSION}-win.zip
+
+unzip html5up.zip > /dev/null 2>&1
 rm -f html5up.zip
 
 info "安装Nginx完成"
 
 info "申请https证书"
 
-curl https://get.acme.sh | sh
+curl https://get.acme.sh | sh > /dev/null 2>&1
 
-~/.acme.sh/acme.sh --issue -d ${url} --webroot /usr/share/nginx/html/
-~/.acme.sh/acme.sh --installcert -d ${url} --key-file ${INSTALLPREFIX}/${NAME}/private.key --fullchain-file ${INSTALLPREFIX}/${NAME}/fullchain.cer --reloadcmd "systemctl restart ${NAME}.service"
+~/.acme.sh/acme.sh --issue -d ${url} --webroot /usr/share/nginx/html/ > /dev/null 2>&1
+~/.acme.sh/acme.sh --installcert -d ${url} --key-file ${INSTALLPREFIX}/${NAME}/private.key --fullchain-file ${INSTALLPREFIX}/${NAME}/fullchain.cer --reloadcmd "systemctl restart ${NAME}.service" > /dev/null 2>&1
+
+info "安装完成!"
 
 cat << EOF
 ++++++++++++++++++++++++
-
-安装完成。
 
 trojan配置文件位置${CONFIGPATH}
 nginx网站目录位置/usr/share/nginx/html/
@@ -206,7 +219,7 @@ Windows客户端下载https://github.com/trojan-gfw/trojan/releases/download/v${
 官网下载https://github.com/trojan-gfw/trojan/releases
 
 Android客户端下载https://github.com/trojan-gfw/igniter/releases/download/v0.1.0-pre-alpha11/app-release.apk
-备用下载https://{$url}/app-release.apk
+备用下载https://${url}/app-release.apk
 
 使用方法参见网址https://evlan.cc/archives/trojan-nginx.html
 
