@@ -22,17 +22,18 @@ warning(){
     echo -e "\033[33m注意: \033[0m$1"
 }
 install_(){
-    local commands=$1
-    info "检查 ${commands}..."
-      if [[ ! -f "/usr/bin/${commands}" ]]; then
-        if [[ ! -f "/usr/sbin/${commands}" ]]; then
-          yum install -y ${commands} > /dev/null 2>&1
+    for i in $@; do
+        local commands="${i}"
+        info "检查 ${commands}"
+        if [[ ! -f "/usr/bin/${commands}" ]]; then
+            if [[ ! -f "/usr/sbin/${commands}" ]]; then
+              yum install -y ${commands} > /dev/null 2>&1
+            fi
         fi
-      fi
+    done
 }
 
-install_ unzip
-install_ curl
+install_ unzip curl
 
 [[ $EUID -ne 0 ]] && error "请以root身份运行此脚本。" && exit 1
 
